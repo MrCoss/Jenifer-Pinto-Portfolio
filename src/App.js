@@ -134,13 +134,10 @@ const Hero = () => {
         >
             {/* The src attribute now points to a placeholder image to prevent build errors. */}
             <img 
-  src="/hero.png" 
+  src="/hero.jpg" 
   alt="Jenifer Pinto" 
-  style={{ width: '400px', borderRadius: '50%' }}
+  style={{ width: "400px", borderRadius: "50%" }}
 />
-
-
-
         </motion.div>
     </section>
   );
