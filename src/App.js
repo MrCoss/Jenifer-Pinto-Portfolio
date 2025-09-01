@@ -134,18 +134,10 @@ const Hero = () => {
         >
             {/* The src attribute now points to a placeholder image to prevent build errors. */}
             <img 
-  src="/hero.png"   // transparent background image
-  alt="Jenifer Pinto"
-  style={{ 
-      width: '100%', 
-      maxWidth: '400px', 
-      height: 'auto', 
-      borderRadius: '1rem',
-      objectFit: 'cover',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' 
-  }}
+  src={`${process.env.PUBLIC_URL}/hero.png`} 
+  alt="Jenifer Pinto" 
+  style={{ width: '300px', borderRadius: '50%' }}
 />
-
 
         </motion.div>
     </section>
