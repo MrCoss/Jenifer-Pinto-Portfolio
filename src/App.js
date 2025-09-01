@@ -136,7 +136,7 @@ const Hero = () => {
             <img 
   src="/hero.png" 
   alt="Jenifer Pinto" 
-  style={{ width: '500px', borderRadius: '80%' }}
+  style={{ width: '500px', borderRadius: '50%' }}
 />
 
 
