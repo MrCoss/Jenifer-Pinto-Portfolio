@@ -136,8 +136,9 @@ const Hero = () => {
             <img 
   src="/hero.png" 
   alt="Jenifer Pinto" 
-  style={{ width: '300px', borderRadius: '50%' }}
+  style={{ width: '400px', borderRadius: '50%' }}
 />
+
 
 
         </motion.div>
