@@ -134,7 +134,7 @@ const Hero = () => {
         >
             {/* The src attribute now points to a placeholder image to prevent build errors. */}
             <img 
-  src="/hero.jpg" 
+  src="/hero.png" 
   alt="Jenifer Pinto" 
   style={{ width: "400px", borderRadius: "50%" }}
 />
