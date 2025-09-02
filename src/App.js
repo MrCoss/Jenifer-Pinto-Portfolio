@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import heroImage from './assets/hero.png';
 // --- Global Styles & Media Queries ---
 // To handle responsiveness without a CSS file, we can inject a style tag.
 const GlobalStyles = () => (
@@ -211,7 +211,7 @@ const Hero = () => {
             */}
             {/* IMPORTANT: Place your image in the /public folder of your project */}
             <img 
-              src="/hero.png" 
+              src={heroImage} 
               alt="Jenifer Pinto" 
               className="hero-image"
               style={{
