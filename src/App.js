@@ -516,6 +516,7 @@ const AnimatedTitle = ({ text }) => (
 );
 
 // --- Navbar Component ---
+// --- Navbar Component (Updated)---
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('home');
@@ -571,8 +572,9 @@ const Navbar = () => {
         <div className="nav-content">
           <a href="#home" className="nav-logo">Jenifer Pinto</a>
           <div className="nav-links"><NavLinks /></div>
-          <button className="mobile-menu-button" onClick={() => setIsOpen(!isOpen)} aria-label="Open menu">
-            <MenuIcon />
+          <button className="mobile-menu-button" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+            {/* --- THIS IS THE FIX --- */}
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
       </motion.nav>
@@ -583,9 +585,7 @@ const Navbar = () => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-             <button className="mobile-menu-button" onClick={() => setIsOpen(false)} aria-label="Close menu" style={{position: 'absolute', top: '20px', right: '20px'}}>
-               <CloseIcon />
-             </button>
+             {/* The close button that was here is now removed */}
              <NavLinks isMobile={true} />
           </motion.div>
         )}
