@@ -92,7 +92,7 @@ const Navbar = () => {
             }}
         >
             <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '5rem' }}>
-                <a href="#home" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#6ee7b7', textDecoration: 'none' }}>Jenifer Pinto</a>
+                <a href="#home" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#6ee7b7', textDecoration: 'none' }}>Home</a>
                 
                 {isMobileView ? (
                     <button onClick={() => setIsOpen(!isOpen)} style={{ color: '#d8b4fe', background: 'none', border: 'none', cursor: 'pointer', zIndex: 60 }}>
@@ -165,7 +165,7 @@ const Hero = () => {
             </motion.p>
             <motion.div variants={heroItemVariants} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
                 <motion.a href="#contact" whileHover={{ y: -4, scale: 1.05, boxShadow: "0 10px 20px -5px rgba(45, 212, 191, 0.4)" }} whileTap={{ scale: 0.95 }} style={{ backgroundColor: '#2dd4bf', color: '#ffffff', fontWeight: 'bold', padding: '0.75rem 2rem', borderRadius: '0.5rem', textDecoration: 'none' }}>Get In Touch</motion.a>
-                <motion.a href="/Jenifer-Pinto-Resume.pdf" download whileHover={{ y: -4, scale: 1.05, boxShadow: "0 10px 20px -5px rgba(167, 139, 250, 0.4)" }} whileTap={{ scale: 0.95 }} style={{ border: '1px solid #a78bfa', color: '#a78bfa', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                <motion.a href={`${process.env.PUBLIC_URL}/Jenifer-Pinto-Resume.pdf`} download whileHover={{ y: -4, scale: 1.05, boxShadow: "0 10px 20px -5px rgba(167, 139, 250, 0.4)" }} whileTap={{ scale: 0.95 }} style={{ border: '1px solid #a78bfa', color: '#a78bfa', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                 <DownloadIcon/> Download Resume
                 </motion.a>
             </motion.div>
