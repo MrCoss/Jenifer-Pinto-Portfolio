@@ -1,57 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Let's go back to importing the image from the /public folder as it's simpler
-// and should work now that the base path is configured.
-// Make sure 'hero.png' is in your /public directory.
-
-// --- Global Styles & Media Queries ---
-// This component is CRUCIAL for making the site responsive.
-const GlobalStyles = () => (
-  <style>{`
-    /* Ensures the main content area has space for the fixed navbar */
-    body {
-        padding-top: 5rem; /* This should match the navbar's height */
-    }
-
-    @media (max-width: 768px) {
-      .desktop-nav {
-        display: none;
-      }
-      .mobile-nav-toggle {
-        display: block;
-      }
-      .hero-section {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-      }
-      .hero-content {
-        order: 2; /* Text appears below the image */
-      }
-      .hero-image-container {
-        order: 1; /* Image appears on top */
-        margin-bottom: 2rem;
-      }
-      .hero-image {
-        width: 90%;
-        max-width: 320px; /* Adjusted size for mobile */
-      }
-      .experience-timeline {
-         margin-left: 1rem; /* Adjust margin for mobile */
-         padding-left: 0;
-      }
-    }
-    @media (min-width: 769px) {
-      .mobile-nav-toggle {
-        display: none;
-      }
-      .mobile-nav-menu {
-        display: none;
-      }
-    }
-  `}</style>
-);
-
+import heroImage from './assets/hero.png';
 
 // --- Icon Components (Self-Contained SVGs) ---
 const MailIcon = () => (
@@ -89,18 +38,34 @@ const AnimatedTitle = ({ text }) => (
     </h2>
 );
 
-// --- Navbar Component (Optimized for Mobile) ---
+// --- Navbar Component (Now with scroll effect) ---
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [activeLink, setActiveLink] = useState('home');
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+    // NEW: State to track scroll position for navbar styling
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth < 768);
+        };
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         const sections = document.querySelectorAll('section[id]');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    setActiveLink(entry.target.id);
-                }
+                if (entry.isIntersecting) setActiveLink(entry.target.id);
             });
         }, { rootMargin: '-50% 0px -50% 0px' });
         
@@ -109,71 +74,54 @@ const Navbar = () => {
     }, []);
 
     const links = [
-        { name: 'Home', href: '#home' },
-        { name: 'About', href: '#about' },
-        { name: 'Experience', href: '#experience' },
-        { name: 'Projects', href: '#projects' },
-        { name: 'Skills', href: '#skills' },
-        { name: 'Contact', href: '#contact' },
+        { name: 'Home', href: '#home' }, { name: 'About', href: '#about' },
+        { name: 'Experience', href: '#experience' }, { name: 'Projects', href: '#projects' },
+        { name: 'Skills', href: '#skills' }, { name: 'Contact', href: '#contact' },
     ];
 
-    const navVariants = {
-        hidden: { y: -100 },
-        visible: { y: 0, transition: { duration: 0.5, ease: 'easeInOut' } },
-    };
-    
-    const mobileMenuVariants = {
-        open: { opacity: 1, height: 'auto', transition: { staggerChildren: 0.07 } },
-        closed: { opacity: 0, height: 0, transition: { staggerChildren: 0.05, staggerDirection: -1 } }
-    };
-
-    const mobileLinkVariants = {
-        open: { y: 0, opacity: 1 },
-        closed: { y: -20, opacity: 0 }
-    };
-
     return (
-        <motion.nav variants={navVariants} initial="hidden" animate="visible" style={{ backgroundColor: 'rgba(60, 24, 100, 0.8)', backdropFilter: 'blur(10px)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, borderBottom: '1px solid rgba(87, 39, 142, 0.5)' }}>
+        <motion.nav 
+            initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5, ease: 'easeInOut' }} 
+            style={{ 
+                position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+                // NEW: Dynamic background and shadow on scroll
+                background: isScrolled ? 'rgba(60, 24, 100, 0.8)' : 'transparent',
+                backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+                borderBottom: isScrolled ? '1px solid rgba(87, 39, 142, 0.5)' : '1px solid transparent',
+                transition: 'background 0.3s ease-in-out, border-bottom 0.3s ease-in-out'
+            }}
+        >
             <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '5rem' }}>
                 <a href="#home" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#6ee7b7', textDecoration: 'none' }}>Jenifer Pinto</a>
                 
-                {/* Desktop Navigation */}
-                <div className="desktop-nav" style={{display: 'flex', gap: '2rem'}}>
-                    {links.map((link) => (
-                        <a key={link.name} href={link.href} style={{ color: '#d8b4fe', textDecoration: 'none', position: 'relative', padding: '0.25rem 0' }}>
-                            {link.name}
-                            {activeLink === link.href.substring(1) && (
-                                <motion.div layoutId="underline" style={{ position: 'absolute', bottom: '-4px', left: 0, right: 0, height: '2px', backgroundColor: '#2dd4bf' }} />
-                            )}
-                        </a>
-                    ))}
-                </div>
-
-                {/* Mobile Navigation Toggle (Hamburger) */}
-                <div className="mobile-nav-toggle">
+                {isMobileView ? (
                     <button onClick={() => setIsOpen(!isOpen)} style={{ color: '#d8b4fe', background: 'none', border: 'none', cursor: 'pointer', zIndex: 60 }}>
                         <svg style={{ width: '1.5rem', height: '1.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path></svg>
                     </button>
-                </div>
+                ) : (
+                    <div style={{display: 'flex', gap: '2rem'}}>
+                        {links.map((link) => (
+                            <a key={link.name} href={link.href} style={{ color: '#d8b4fe', textDecoration: 'none', position: 'relative', padding: '0.25rem 0' }}>
+                                {link.name}
+                                {activeLink === link.href.substring(1) && (
+                                    <motion.div layoutId="underline" style={{ position: 'absolute', bottom: '-4px', left: 0, right: 0, height: '2px', backgroundColor: '#2dd4bf' }} />
+                                )}
+                            </a>
+                        ))}
+                    </div>
+                )}
             </div>
             
-            {/* Mobile Navigation Menu */}
             <AnimatePresence>
-            {isOpen && (
+            {isMobileView && isOpen && (
                 <motion.div 
-                    className="mobile-nav-menu"
-                    variants={mobileMenuVariants} 
-                    initial="closed" 
-                    animate="open" 
-                    exit="closed"
+                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                     style={{ backgroundColor: '#4c1d95', overflow: 'hidden' }}
                 >
                     <div style={{paddingBottom: '1rem'}}>
                     {links.map((link) => 
                       <motion.a 
-                        key={link.name} 
-                        href={link.href} 
-                        variants={mobileLinkVariants}
+                        key={link.name} href={link.href}
                         style={{ display: 'block', textAlign: 'center', padding: '0.75rem 0', color: '#d8b4fe', textDecoration: 'none', fontSize: '1.125rem' }} 
                         onClick={() => setIsOpen(false)}
                       >
@@ -188,73 +136,103 @@ const Navbar = () => {
     );
 };
 
-// --- Hero Component (Responsive Image) ---
+// --- Hero Component (With Animated Text) ---
 const Hero = () => {
+  // NEW: Staggered animation variants for hero text
+  const heroContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.3, delayChildren: 0.2 } },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  };
+
   return (
-    <section id="home" className="hero-section" style={{ minHeight: 'calc(100vh - 5rem)', display: 'flex', alignItems: 'center', gap: '2rem' }}>
-        <div className="hero-content" style={{ flex: '1 1 500px' }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} style={{ color: '#6ee7b7', fontWeight: '600', marginBottom: '1rem', fontSize: '1.125rem' }}>Hello, I'm</motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(to right, #6ee7b7, #a78bfa)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Jenifer Pinto</motion.h1>
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} style={{ fontSize: 'clamp(1.25rem, 3vw, 1.875rem)', color: 'rgba(216, 180, 254, 0.9)', fontWeight: '600', marginBottom: '2rem' }}>Business Analyst & MBA Finance Candidate</motion.p>
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.8 }} style={{ maxWidth: '42rem', color: 'rgba(216, 180, 254, 0.8)', marginBottom: '2rem', lineHeight: '1.6', margin: '0 auto 2rem auto' }}>
+    <section id="home" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', flexWrap: 'wrap-reverse', gap: '2rem', textAlign: 'center' }}>
+        <motion.div 
+            style={{ flex: '1 1 500px' }}
+            variants={heroContainerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div variants={heroItemVariants} style={{ color: '#6ee7b7', fontWeight: '600', marginBottom: '1rem', fontSize: '1.125rem' }}>Hello, I'm</motion.div>
+            <motion.h1 variants={heroItemVariants} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(to right, #6ee7b7, #a78bfa)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Jenifer Pinto</motion.h1>
+            <motion.p variants={heroItemVariants} style={{ fontSize: 'clamp(1.25rem, 3vw, 1.875rem)', color: 'rgba(216, 180, 254, 0.9)', fontWeight: '600', marginBottom: '2rem' }}>Business Analyst & MBA Finance Candidate</motion.p>
+            <motion.p variants={heroItemVariants} style={{ maxWidth: '42rem', color: 'rgba(216, 180, 254, 0.8)', marginBottom: '2rem', lineHeight: '1.6', margin: '0 auto 2rem auto' }}>
                 I leverage data to drive strategic business decisions, specializing in financial analysis, process optimization, and creating data-driven insights with Excel, Power BI/Tableau, and SQL.
             </motion.p>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1 }} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-                <motion.a href="#contact" whileHover={{ y: -4, scale: 1.05, transition: { duration: 0.2 } }} whileTap={{ scale: 0.95 }} style={{ backgroundColor: '#2dd4bf', color: '#ffffff', fontWeight: 'bold', padding: '0.75rem 2rem', borderRadius: '0.5rem', textDecoration: 'none', boxShadow: '0 10px 15px -3px rgba(45, 212, 191, 0.3), 0 4px 6px -2px rgba(45, 212, 191, 0.2)' }}>Get In Touch</motion.a>
-                <motion.a href="/Jenifer-Pinto-Resume.pdf" download whileHover={{ y: -4, scale: 1.05, transition: { duration: 0.2 } }} whileTap={{ scale: 0.95 }} style={{ border: '1px solid #a78bfa', color: '#a78bfa', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <motion.div variants={heroItemVariants} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+                <motion.a href="#contact" whileHover={{ y: -4, scale: 1.05, boxShadow: "0 10px 20px -5px rgba(45, 212, 191, 0.4)" }} whileTap={{ scale: 0.95 }} style={{ backgroundColor: '#2dd4bf', color: '#ffffff', fontWeight: 'bold', padding: '0.75rem 2rem', borderRadius: '0.5rem', textDecoration: 'none' }}>Get In Touch</motion.a>
+                <motion.a href="/Jenifer-Pinto-Resume.pdf" download whileHover={{ y: -4, scale: 1.05, boxShadow: "0 10px 20px -5px rgba(167, 139, 250, 0.4)" }} whileTap={{ scale: 0.95 }} style={{ border: '1px solid #a78bfa', color: '#a78bfa', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                 <DownloadIcon/> Download Resume
                 </motion.a>
             </motion.div>
-        </div>
+        </motion.div>
         <motion.div 
-            className="hero-image-container"
             initial={{ opacity: 0, scale: 0.8 }} 
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }} 
             style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
             <img 
-              src="/hero.png" 
-              alt="Jenifer Pinto" 
-              className="hero-image"
-              style={{
-                  height: 'auto',
-                  maxWidth: '500px',
-                  width: '100%',
-                  borderRadius: "50%"
-              }}
+              src={heroImage} alt="Jenifer Pinto" 
+              style={{ height: 'auto', maxWidth: '400px', width: '90%', borderRadius: "50%" }}
             />
         </motion.div>
     </section>
   );
 };
 
+// --- Universal Section Wrapper for entrance animations ---
+const SectionWrapper = ({ children, id }) => (
+    <motion.section 
+        id={id}
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        style={{ padding: '6rem 0' }}
+    >
+        {children}
+    </motion.section>
+);
+
+
 // --- About Component ---
 const About = () => (
-    <section id="about" style={{ padding: '6rem 0' }}>
+    <SectionWrapper id="about">
         <AnimatedTitle text="About Me" />
-        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.8 }} style={{ fontSize: '1.25rem', color: 'rgba(216, 180, 254, 0.9)', textAlign: 'center', maxWidth: '48rem', margin: '0 auto', lineHeight: '1.6', backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '2rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
+        <motion.div whileHover={{ y: -8, boxShadow: "0 10px 20px -5px rgba(88, 28, 135, 0.5)" }} style={{ fontSize: '1.25rem', color: 'rgba(216, 180, 254, 0.9)', textAlign: 'center', maxWidth: '48rem', margin: '0 auto', lineHeight: '1.6', backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '2rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
             <p>I am a dedicated and detail-oriented MBA Finance student with a strong foundation in business analysis and financial analytics. My experience spans from co-founding an educational venture to interning at dynamic firms where I've honed my skills in data analysis, reporting, and process improvement. I am driven by a passion for uncovering insights that support strategic decision-making and enhance operational efficiency.</p>
         </motion.div>
-    </section>
+    </SectionWrapper>
 );
 
 // --- Experience Component ---
 const Experience = () => {
     const experiences = [
-        { role: 'Business Analyst Intern', company: 'Unified Mentor', date: 'Sep 2025 - Present', desc: 'Analyzed business requirements, conducted data analysis to identify trends, and created dashboards with insights for stakeholders using Excel, Power BI/Tableau, and SQL.' },
+        { role: 'Business Analyst Intern', company: 'Unified Mentor', date: `Sep 2025 - Present`, desc: 'Analyzed business requirements, conducted data analysis to identify trends, and created dashboards with insights for stakeholders using Excel, Power BI/Tableau, and SQL.' },
         { role: 'Financial Analyst Intern', company: 'SkillFied Mentor', date: 'Jul 2025 - Aug 2025', desc: 'Developed a fraud detection model and built a portfolio optimization tool using Python. Commended for exceptional dedication and hard work.' },
         { role: 'Co-Founder and Teacher', company: 'JHT SMART STEPS LEARNING', date: 'Feb 2023 - Jun 2025', desc: 'Designed, managed, and delivered educational services independently, creating a specialized tutoring business.'},
         { role: 'Retail Sales Associate', company: 'Tata Tanishq', date: 'Jan 2022 - Jul 2022', desc: 'Assisted customers, met monthly sales targets, and handled billing, inventory, and merchandising.' }
     ];
 
   return (
-    <section id="experience" style={{ padding: '6rem 0' }}>
+    <SectionWrapper id="experience">
       <AnimatedTitle text="Work Experience" />
-      <div className="experience-timeline" style={{ position: 'relative', borderLeft: '2px solid rgba(87, 39, 142, 0.8)', maxWidth: '42rem', margin: '0 auto' }}>
+      <div style={{ position: 'relative', borderLeft: '2px solid rgba(87, 39, 142, 0.8)', maxWidth: '42rem', margin: '0 auto', paddingLeft: '1rem' }}>
         {experiences.map((exp, index) => (
-          <motion.div key={index} initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: index * 0.2 }} style={{ marginBottom: '2.5rem', paddingLeft: '2rem', position: 'relative' }}>
-            <div style={{ position: 'absolute', left: '-10px', top: '5px', width: '1rem', height: '1rem', backgroundColor: '#2dd4bf', borderRadius: '50%', border: '4px solid #312e81' }}></div>
+          <motion.div 
+              key={index} 
+              initial={{ opacity: 0, x: -50 }} 
+              whileInView={{ opacity: 1, x: 0 }} 
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }} 
+              style={{ marginBottom: '2.5rem', paddingLeft: '2rem', position: 'relative' }}
+          >
+            <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: index * 0.2 + 0.3 }} viewport={{ once: true }} style={{ position: 'absolute', left: '-10px', top: '5px', width: '1rem', height: '1rem', backgroundColor: '#2dd4bf', borderRadius: '50%', border: '4px solid #312e81' }}></motion.div>
             <p style={{ fontSize: '0.875rem', color: '#a78bfa', fontWeight: '500' }}>{exp.date}</p>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginTop: '0.25rem', color: '#e0e7ff' }}>{exp.role}</h3>
             <p style={{ fontSize: '1.125rem', color: '#6ee7b7', fontWeight: '600' }}>{exp.company}</p>
@@ -262,7 +240,7 @@ const Experience = () => {
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
@@ -274,53 +252,55 @@ const Projects = () => {
     ];
 
   return (
-    <section id="projects" style={{ padding: '6rem 0', backgroundColor: 'rgba(87, 39, 142, 0.5)', margin: '2.5rem 0', borderRadius: '0.75rem' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
-        <AnimatedTitle text="Key Projects" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
-          {projects.map((project, index) => (
-            <motion.div key={index} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5, delay: index * 0.2 }} whileHover={{ y: -8, scale: 1.03, transition: { duration: 0.3 } }} style={{ backgroundColor: '#312e81', borderRadius: '0.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid #581c87' }}>
-              <div style={{ padding: '2rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#6ee7b7', marginBottom: '0.75rem' }}>{project.title}</h3>
-                <p style={{ color: '#d8b4fe', marginBottom: '1rem', flexGrow: 1 }}>{project.description}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                  {project.tech.map((tech, i) => <span key={i} style={{ backgroundColor: '#4338ca', color: '#d8b4fe', fontSize: '0.875rem', fontWeight: '500', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>{tech}</span>)}
+    <SectionWrapper id="projects">
+        <div style={{ padding: '4rem 0', backgroundColor: 'rgba(87, 39, 142, 0.5)', margin: '-4rem -2rem', borderRadius: '0.75rem' }}>
+            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
+                <AnimatedTitle text="Key Projects" />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
+                {projects.map((project, index) => (
+                    <motion.div key={index} whileHover={{ y: -8, scale: 1.03, boxShadow: "0 10px 20px -5px rgba(45, 212, 191, 0.2)" }} style={{ backgroundColor: '#312e81', borderRadius: '0.5rem', display: 'flex', flexDirection: 'column', border: '1px solid #581c87' }}>
+                    <div style={{ padding: '2rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#6ee7b7', marginBottom: '0.75rem' }}>{project.title}</h3>
+                        <p style={{ color: '#d8b4fe', marginBottom: '1rem', flexGrow: 1 }}>{project.description}</p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
+                        {project.tech.map((tech, i) => <span key={i} style={{ backgroundColor: '#4338ca', color: '#d8b4fe', fontSize: '0.875rem', fontWeight: '500', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>{tech}</span>)}
+                        </div>
+                    </div>
+                    </motion.div>
+                ))}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+            </div>
         </div>
-      </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
 // --- Skills Component ---
 const Skills = () => {
     const skills = ['Excel', 'Power BI', 'Tableau', 'SQL', 'Python', 'Financial Modeling', 'Risk Management', 'Business Analysis', 'Data Analysis', 'Critical Thinking', 'Collaboration', 'Communication'];
-    const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } };
+    const containerVariants = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
     const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
   return (
-    <section id="skills" style={{ padding: '6rem 0' }}>
+    <SectionWrapper id="skills">
       <AnimatedTitle text="Core Competencies" />
       <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', maxWidth: '56rem', margin: '0 auto' }}>
         {skills.map((skill) => (
-          <motion.div key={skill} variants={itemVariants} whileHover={{ y: -5, scale: 1.05, transition: { duration: 0.2 } }} style={{ backgroundColor: '#4338ca', border: '1px solid #581c87', padding: '1rem', borderRadius: '0.5rem', textAlign: 'center', cursor: 'pointer' }}>
+          <motion.div key={skill} variants={itemVariants} whileHover={{ y: -5, scale: 1.05, rotate: 2, boxShadow: "0 10px 20px -5px rgba(167, 139, 250, 0.3)" }} style={{ backgroundColor: '#4338ca', border: '1px solid #581c87', padding: '1rem', borderRadius: '0.5rem', textAlign: 'center' }}>
             <p style={{ fontSize: '1.125rem', fontWeight: '600', color: '#d8b4fe' }}>{skill}</p>
           </motion.div>
         ))}
       </motion.div>
-    </section>
+    </SectionWrapper>
   );
 };
 
 // --- Education Component ---
 const Education = () => (
-    <section id="education" style={{ padding: '6rem 0' }}>
+    <SectionWrapper id="education">
       <AnimatedTitle text="Education & Certifications" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem', maxWidth: '56rem', margin: '0 auto' }}>
-        <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} whileHover={{ y: -5, transition: { duration: 0.2 } }} style={{ backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
+        <motion.div whileHover={{ y: -8, boxShadow: "0 10px 20px -5px rgba(88, 28, 135, 0.5)" }} style={{ backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#6ee7b7' }}>Education</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
@@ -333,7 +313,7 @@ const Education = () => (
             </div>
           </div>
         </motion.div>
-        <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} whileHover={{ y: -5, transition: { duration: 0.2 } }} style={{ backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
+        <motion.div whileHover={{ y: -8, boxShadow: "0 10px 20px -5px rgba(88, 28, 135, 0.5)" }} style={{ backgroundColor: 'rgba(87, 39, 142, 0.5)', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #581c87' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#a78bfa' }}>Key Certifications</h3>
           <ul style={{ listStyleType: 'disc', listStylePosition: 'inside', color: 'rgba(216, 180, 254, 0.9)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <li>Bank of America - Investment Banking (Forage)</li>
@@ -344,13 +324,13 @@ const Education = () => (
           </ul>
         </motion.div>
       </div>
-    </section>
+    </SectionWrapper>
 );
 
 // --- Contact / Footer Component ---
 const Contact = () => (
-    <footer id="contact" style={{ padding: '6rem 0', textAlign: 'center' }}>
-      <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.8 }}>
+    <SectionWrapper id="contact">
+      <div style={{textAlign: 'center' }}>
         <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#d8b4fe' }}>Let's Connect</h2>
         <p style={{ color: '#d8b4fe', marginBottom: '2rem', maxWidth: '36rem', margin: '0 auto 2rem auto' }}>
           I'm actively seeking new opportunities in business analysis and finance. If you have a role that aligns with my skills and experience, I'd love to hear from you.
@@ -359,54 +339,40 @@ const Contact = () => (
           <MailIcon /> Say Hello
         </motion.a>
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem', gap: '1.5rem' }}>
-            <a href="https://linkedin.com/in/jeniferpinto" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}><LinkedInIcon /></a>
+            <motion.a href="https://linkedin.com/in/jeniferpinto" target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.2, color: '#6ee7b7' }} style={{ color: '#a78bfa' }}><LinkedInIcon /></motion.a>
         </div>
         <div style={{ marginTop: '3rem', borderTop: '1px solid rgba(87, 39, 142, 0.5)', paddingTop: '2rem' }}>
           <p style={{ color: '#a78bfa' }}>© {new Date().getFullYear()} Jenifer Pinto. All Rights Reserved.</p>
         </div>
-      </motion.div>
-    </footer>
+      </div>
+    </SectionWrapper>
 );
 
 // --- Back to Top Button Component ---
 const BackToTopButton = () => {
     const [isVisible, setIsVisible] = useState(false);
 
-    const toggleVisibility = () => {
-        if (window.pageYOffset > 300) setIsVisible(true);
-        else setIsVisible(false);
-    };
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
     useEffect(() => {
+        const toggleVisibility = () => setIsVisible(window.pageYOffset > 300);
         window.addEventListener('scroll', toggleVisibility);
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
     return (
-        <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 100 }}>
-            <AnimatePresence>
-            {isVisible && (
-                <motion.button 
-                    onClick={scrollToTop}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    style={{ background: '#2dd4bf', color: 'white', border: 'none', borderRadius: '50%', width: '3.5rem', height: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 14px 0 rgba(45, 212, 191, 0.39)'}}
-                >
-                    <ArrowUpIcon />
-                </motion.button>
-            )}
-            </AnimatePresence>
-        </div>
+        <AnimatePresence>
+        {isVisible && (
+            <motion.button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+                whileHover={{ scale: 1.1, boxShadow: "0 0 20px rgba(45, 212, 191, 0.7)" }} whileTap={{ scale: 0.9 }}
+                style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 100, background: '#2dd4bf', color: 'white', border: 'none', borderRadius: '50%', width: '3.5rem', height: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+                <ArrowUpIcon />
+            </motion.button>
+        )}
+        </AnimatePresence>
     );
 };
-
 
 // --- Main App Component ---
 function App() {
@@ -416,8 +382,6 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#312e81', color: '#d8b4fe', fontFamily: 'sans-serif' }}>
-      {/* This component injects the responsive CSS. It's essential! */}
-      <GlobalStyles />
       <Navbar />
       <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
           <Hero />
