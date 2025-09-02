@@ -158,7 +158,7 @@ const Hero = () => {
             animate="visible"
         >
             <motion.div variants={heroItemVariants} style={{ color: '#6ee7b7', fontWeight: '600', marginBottom: '1rem', fontSize: '1.125rem' }}>Hello, I'm</motion.div>
-            <motion.h1 variants={heroItemVariants} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(to right, #6ee7b7, #a78bfa)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Jenifer Pinto</motion.h1>
+            <motion.h1 variants={heroItemVariants} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(to right, #6ee7b7, #a78bfa)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Home</motion.h1>
             <motion.p variants={heroItemVariants} style={{ fontSize: 'clamp(1.25rem, 3vw, 1.875rem)', color: 'rgba(216, 180, 254, 0.9)', fontWeight: '600', marginBottom: '2rem' }}>Business Analyst & MBA Finance Candidate</motion.p>
             <motion.p variants={heroItemVariants} style={{ maxWidth: '42rem', color: 'rgba(216, 180, 254, 0.8)', marginBottom: '2rem', lineHeight: '1.6', margin: '0 auto 2rem auto' }}>
                 I leverage data to drive strategic business decisions, specializing in financial analysis, process optimization, and creating data-driven insights with Excel, Power BI/Tableau, and SQL.
