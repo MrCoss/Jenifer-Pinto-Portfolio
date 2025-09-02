@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/Jenifer-Pinto-Portfolio/static/css/main.392d8102.css",
-    "main.js": "/Jenifer-Pinto-Portfolio/static/js/main.43d47d2a.js",
+    "main.css": "/Jenifer-Pinto-Portfolio/static/css/main.746959bb.css",
+    "main.js": "/Jenifer-Pinto-Portfolio/static/js/main.6287029b.js",
+    "static/media/hero.png": "/Jenifer-Pinto-Portfolio/static/media/hero.b120c1f1ddebc7c03944.png",
     "index.html": "/Jenifer-Pinto-Portfolio/index.html",
-    "main.392d8102.css.map": "/Jenifer-Pinto-Portfolio/static/css/main.392d8102.css.map",
-    "main.43d47d2a.js.map": "/Jenifer-Pinto-Portfolio/static/js/main.43d47d2a.js.map"
+    "main.746959bb.css.map": "/Jenifer-Pinto-Portfolio/static/css/main.746959bb.css.map",
+    "main.6287029b.js.map": "/Jenifer-Pinto-Portfolio/static/js/main.6287029b.js.map"
   },
   "entrypoints": [
-    "static/css/main.392d8102.css",
-    "static/js/main.43d47d2a.js"
+    "static/css/main.746959bb.css",
+    "static/js/main.6287029b.js"
   ]
 }
