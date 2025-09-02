@@ -609,7 +609,7 @@ const Hero = () => (
       </p>
       <div className="hero-buttons">
         <motion.a href="#contact" className="btn btn-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>Get In Touch <MailIcon /></motion.a>
-        <motion.a href="/Jenifer-Pinto-Resume.pdf" download className="btn btn-secondary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>Download Resume <DownloadIcon /></motion.a>
+        <motion.a href={`${process.env.PUBLIC_URL}/Jenifer-Pinto-Resume.pdf`} download className="btn btn-secondary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>Download Resume <DownloadIcon /></motion.a>
       </div>
     </motion.div>
     <motion.div className="hero-image-container" variants={itemVariant}>
