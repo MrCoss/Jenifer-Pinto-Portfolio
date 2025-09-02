@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import heroImage from './assets/hero.png';
+// Let's go back to importing the image from the /public folder as it's simpler
+// and should work now that the base path is configured.
+// Make sure 'hero.png' is in your /public directory.
+
 // --- Global Styles & Media Queries ---
-// To handle responsiveness without a CSS file, we can inject a style tag.
+// This component is CRUCIAL for making the site responsive.
 const GlobalStyles = () => (
   <style>{`
+    /* Ensures the main content area has space for the fixed navbar */
+    body {
+        padding-top: 5rem; /* This should match the navbar's height */
+    }
+
     @media (max-width: 768px) {
       .desktop-nav {
         display: none;
@@ -115,8 +123,8 @@ const Navbar = () => {
     };
     
     const mobileMenuVariants = {
-        open: { opacity: 1, y: 0, transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
-        closed: { opacity: 0, y: "-100%", transition: { staggerChildren: 0.05, staggerDirection: -1 } }
+        open: { opacity: 1, height: 'auto', transition: { staggerChildren: 0.07 } },
+        closed: { opacity: 0, height: 0, transition: { staggerChildren: 0.05, staggerDirection: -1 } }
     };
 
     const mobileLinkVariants = {
@@ -126,7 +134,7 @@ const Navbar = () => {
 
     return (
         <motion.nav variants={navVariants} initial="hidden" animate="visible" style={{ backgroundColor: 'rgba(60, 24, 100, 0.8)', backdropFilter: 'blur(10px)', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, borderBottom: '1px solid rgba(87, 39, 142, 0.5)' }}>
-            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '5rem' }}>
                 <a href="#home" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#6ee7b7', textDecoration: 'none' }}>Jenifer Pinto</a>
                 
                 {/* Desktop Navigation */}
@@ -158,8 +166,9 @@ const Navbar = () => {
                     initial="closed" 
                     animate="open" 
                     exit="closed"
-                    style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#4c1d95', paddingBottom: '1rem' }}
+                    style={{ backgroundColor: '#4c1d95', overflow: 'hidden' }}
                 >
+                    <div style={{paddingBottom: '1rem'}}>
                     {links.map((link) => 
                       <motion.a 
                         key={link.name} 
@@ -171,6 +180,7 @@ const Navbar = () => {
                           {link.name}
                       </motion.a>
                     )}
+                    </div>
                 </motion.div>
             )}
             </AnimatePresence>
@@ -181,7 +191,7 @@ const Navbar = () => {
 // --- Hero Component (Responsive Image) ---
 const Hero = () => {
   return (
-    <section id="home" className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <section id="home" className="hero-section" style={{ minHeight: 'calc(100vh - 5rem)', display: 'flex', alignItems: 'center', gap: '2rem' }}>
         <div className="hero-content" style={{ flex: '1 1 500px' }}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} style={{ color: '#6ee7b7', fontWeight: '600', marginBottom: '1rem', fontSize: '1.125rem' }}>Hello, I'm</motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 'bold', marginBottom: '1rem', background: 'linear-gradient(to right, #6ee7b7, #a78bfa)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Jenifer Pinto</motion.h1>
@@ -191,7 +201,6 @@ const Hero = () => {
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1 }} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
                 <motion.a href="#contact" whileHover={{ y: -4, scale: 1.05, transition: { duration: 0.2 } }} whileTap={{ scale: 0.95 }} style={{ backgroundColor: '#2dd4bf', color: '#ffffff', fontWeight: 'bold', padding: '0.75rem 2rem', borderRadius: '0.5rem', textDecoration: 'none', boxShadow: '0 10px 15px -3px rgba(45, 212, 191, 0.3), 0 4px 6px -2px rgba(45, 212, 191, 0.2)' }}>Get In Touch</motion.a>
-                {/* IMPORTANT: Place your resume in the /public folder of your project */}
                 <motion.a href="/Jenifer-Pinto-Resume.pdf" download whileHover={{ y: -4, scale: 1.05, transition: { duration: 0.2 } }} whileTap={{ scale: 0.95 }} style={{ border: '1px solid #a78bfa', color: '#a78bfa', fontWeight: 'bold', padding: '0.75rem 1rem', borderRadius: '0.5rem', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                 <DownloadIcon/> Download Resume
                 </motion.a>
@@ -204,20 +213,14 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 1.2, ease: 'easeOut' }} 
             style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
-            {/* CHANGE: The hero image is now responsive.
-              To make its background transparent, you must edit the PNG file in an image editor 
-              (like Photopea, GIMP, or Photoshop) and use a tool like 'magic wand' or 'background remover' 
-              to delete the background, then save it as a PNG with transparency.
-            */}
-            {/* IMPORTANT: Place your image in the /public folder of your project */}
             <img 
-              src={heroImage} 
+              src="/hero.png" 
               alt="Jenifer Pinto" 
               className="hero-image"
               style={{
-                  height: 'auto', // Ensures aspect ratio is maintained
-                  maxWidth: '500px', // Max size on desktop
-                  width: '100%', // Scales down on smaller viewports
+                  height: 'auto',
+                  maxWidth: '500px',
+                  width: '100%',
                   borderRadius: "50%"
               }}
             />
@@ -413,10 +416,10 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#312e81', color: '#d8b4fe', fontFamily: 'sans-serif' }}>
+      {/* This component injects the responsive CSS. It's essential! */}
       <GlobalStyles />
       <Navbar />
-      <div style={{ paddingTop: '5rem' }}>
-        <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
           <Hero />
           <About />
           <Experience />
@@ -424,8 +427,7 @@ function App() {
           <Skills />
           <Education />
           <Contact />
-        </main>
-      </div>
+      </main>
       <BackToTopButton />
     </div>
   );
